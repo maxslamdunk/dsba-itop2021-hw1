@@ -38,7 +38,8 @@ MainWindow::~MainWindow()
 void MainWindow::on_pushButton_2_clicked()
 {
     recipeData->open(this);
-    ui->pushButton_2->setEnabled(false);
+    if (model->rowCount() != 0)
+        ui->pushButton_2->setEnabled(false);
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -153,3 +154,78 @@ void MainWindow::on_pushButton_clicked()
     detailWindow.exec();
     }
 }
+
+void MainWindow::on_pushButton_9_clicked() //open
+{
+    QString fileName = QFileDialog::getOpenFileName(this,"Open File","*.csv");
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    while(!file.atEnd())
+    {
+        QByteArray line = file.readLine();
+        QList<QByteArray> lineAsVector = line.split(';');
+        for (int i = 0; i < lineAsVector.size(); i++)
+        {
+            if (lineAsVector[i] != "")
+                ui->listWidget->addItem(QString(lineAsVector[i]));
+        }
+    }
+
+    QList<QString> texts;
+    QList<QListWidgetItem *> items =
+          ui->listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
+    foreach(QListWidgetItem *item, items)
+      texts.append(item->text());
+
+    proxyModel->setFilterIngredients(texts);
+
+    file.close();
+}
+
+
+void MainWindow::on_pushButton_10_clicked() //save
+{
+    QString filename = QFileDialog::getSaveFileName(this, "Save file", "", ".csv");
+    QFile f(filename);
+    f.open(QIODevice::WriteOnly);
+    QVector<QString> texts;
+    QVector<QListWidgetItem *> items =
+          ui->listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
+    foreach(QListWidgetItem *item, items)
+      texts.append(item->text());
+    std::stringstream ss;
+    for (int i = 0; i < texts.size(); i++)
+    {
+        if (i != texts.size())
+        {
+            ss << texts[i].toStdString() << ";";
+        }
+        else
+        {
+            ss << texts[i].toStdString();
+        }
+    }
+    f.write(ss.str().c_str());
+    f.close();
+}
+
+
+void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    QModelIndex proxyIndex = index;
+    QModelIndex modelIndex = proxyModel->mapToSource(proxyIndex);
+    int selectedRow = modelIndex.row();
+
+    QList<QString> texts;
+    QList<QListWidgetItem *> items =
+          ui->listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
+    foreach(QListWidgetItem *item, items)
+      texts.append(item->text());
+
+    DetailWindow detailWindow;
+    Recipe recipe = recipeData->getRecipe(selectedRow);
+    detailWindow.setRecipeDetail(selectedRow, recipe, texts);
+    detailWindow.setModal(true);
+    detailWindow.exec();
+}
+

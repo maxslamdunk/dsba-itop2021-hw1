@@ -39,12 +39,12 @@ class RecipeData : public QObject
             QString filename = QFileDialog::getSaveFileName(window, "Save file", "", ".csv");
             QFile f(filename);
             f.open(QIODevice::WriteOnly);
-            f.write("name,propotions,derictions,link,ingredients\n");
+            f.write(";name;propotions;derictions;link;ingredients;\n");
             for(int i = 0; i < (int) _data.size(); i++)
             {
                 std::stringstream ss;
-                ss << _data[i].name << ";" << _data[i].proportions << ";" << _data[i].directions
-                   << ";" << _data[i].link << ";" << _data[i].ingredients << "\n";
+                ss << i << ";" << _data[i].name << ";" << _data[i].proportions << ";" << _data[i].directions
+                   << ";" << _data[i].link << ";" << _data[i].ingredients << ";" << "\n";
                 f.write(ss.str().c_str());
             }
             f.close();
@@ -88,8 +88,8 @@ class RecipeData : public QObject
 
         void update()
         {
-            for(int row = 0; row < pointerToModel->rowCount(); row++){
-
+            for(int row = 0; row < pointerToModel->rowCount(); row++)
+            {
                 if(row >= (int) _data.size())
                     _data.push_back(Recipe());
 
@@ -133,6 +133,7 @@ class RecipeData : public QObject
                 _data[row].directions = directions;
                 _data[row].link = link;
             }
+            file.close();
         }
 
     private:

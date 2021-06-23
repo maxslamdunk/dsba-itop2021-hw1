@@ -72,6 +72,20 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_10">
+        <property name="text">
+         <string>save fridge</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_9">
+        <property name="text">
+         <string>open fridge</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
@@ -123,7 +137,7 @@
            <number>200</number>
           </attribute>
           <attribute name="horizontalHeaderDefaultSectionSize">
-           <number>180</number>
+           <number>200</number>
           </attribute>
          </widget>
         </item>
